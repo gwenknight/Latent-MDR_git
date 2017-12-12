@@ -1,0 +1,126 @@
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[english]{babel}
+\usepackage{breakcites}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{fullpage}
+\usepackage[]{geometry}
+\usepackage[]{graphicx}
+\usepackage{palatino}
+\usepackage{rotating}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{csvsimple}
+\usepackage{multirow}
+\usepackage{verbatim}
+\bibliographystyle{unsrt}
+
+\title{What has stopped MDR-TB sweeping to dominance? a fitness cost or protective latency effects?}
+
+\author{Gwen, Rein, Pete, (Louis?)} 
+
+\date{}
+
+\begin{document}
+ 
+\maketitle{}
+
+\tableofcontents{}
+
+\clearpage
+
+\section{Abstract / Background / Introduction}
+
+Rough thoughts... 
+
+\begin{itemize}
+	\item MDR-TB is bad... how long around / treatment etc
+	\item Prevalence of MDR-TB at ~ 5% globally despite lots of TB treatment 
+	\item Fitness cost detected in vitro, epidemiologically (clusters) and in situ (my Peru work). Perhaps this stops spread? 
+	\item OR Protective effect of DS-TB carriage. Immunity. Perhaps this stops it? 
+	\item Explored changing demography, latency assumptions and fitness cost levels
+	\item Removed latency protection, allowing for coinfection or just remove? and compare levels of MDR-TB
+	\item Also, explored impact of reduced DS-TB LTBI due to LTBI therapy - does this allow MDR to dominate? 
+\end{itemize}
+
+\clearpage
+
+\section{Questions / Thoughts}
+
+\begin{itemize}
+	\item Should we include a fitness cost distribution? (as in my previous work). This would increase our predicted levels of MDR-TB. Could include by exploring a mean and variance combination. ut I don't think it helps to answer the theoretical question here
+	\item Should we include strain immunity (Basu, 2008 work)? 
+	\item Should we include mixed infections to explore immnunity / interaction effects? started to build but many unknowns. Key thing is to capture that treatment of MDR-TB can happen at a higher rate than the stats on confirmed MDR-TB receiving treatment. Could include cross-immunity. As in not just vary protection from latency, but also let DS LTBI be less likely to become DR? kinda include this with the fitness cost to transmission... 
+\end{itemize}
+
+\clearpage
+
+\section{Methods}
+
+\subsection{Overview}
+
+\subsection{Model}
+
+We built a deterministic transmission model using a standard natural history framework with two strains (DS-TB and MDR-TB). 
+Uninfected, go to Latent, got to active disease. 
+Treatment slightly different: track time on treatment, with fail / cure outcomes are end of each timestep. 
+Previous treatment (any) is tracked in order to match statistics on levels of MDR-TB
+Fitness cost applied to transmission or progression
+Treatment of MDR-TB higher than just CDR as misdiagnosis / think they are DS-TB: reason for higher level of MDR in re-treatment. Use "case detection of TB" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+\clearpage 
+
+\subsection{FLU SKELETON}
+
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=1\textwidth]{../plots/compare_seasons.pdf}
+	\caption{Comparing baseline data across seasons}
+	\label{fig:compareseasons}
+\end{figure} 
+
+\begin{itemize}
+\item don't include season - not much difference and too little data
+\end{itemize}
+
+
+\begin{figure}[htbp]
+\centering
+\begin{subfigure}[b]{0.4\textwidth}
+		\includegraphics[width=1\textwidth]{../plots/ili.pdf}
+		\caption{}
+		\label{fig:ili}
+\end{subfigure}
+\begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=1\textwidth]{../plots/ili_fever.pdf}
+	\caption{}
+	\label{fig:ili.fever}
+\end{subfigure}
+\caption{Antibiotic prescriptions split by those with ECDC standards defined Influenza like illness (ILI) (a) or an ILI and fever (b)}
+\label{fig:ilif}
+\end{figure}
+
+\begin{itemize}
+\item don't include ili
+\item include ili.fever (SF: tracks 'flu season well)
+\end{itemize}
+
+
+
+
+% \bibliography{../flusurvey}
+
+\end{document}
