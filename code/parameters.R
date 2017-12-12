@@ -16,6 +16,7 @@ p_i <- matrix(1,1,Mnage)
 p_i[1:15] <- 0.02; p_i[16:Mnage] <- 0.15;
 
 # mortality rates
+# UN gives by 5 year age groups
 #m <- matrix(0.0125,1,Mnage) # LE of 80yrs
 m[1:10] <- 400/100000; # 40/1000 high from USAID
 m[10:40]<- 30/100000; # from US https://www.google.co.uk/imgres?imgurl=https://www.cdc.gov/nchs/images/databriefs/1-50/db26_Fig_2.png&imgrefurl=https://www.cdc.gov/nchs/products/databriefs/db26.htm&h=686&w=960&tbnid=0ZQ2wBdlGuXr1M:&tbnh=150&tbnw=211&usg=___lRLJd8LVdpoKcbwF_EMZRQe9Bo%3D&vet=10ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA..i&docid=0AfpBMnU6MIZFM&client=firefox-b-ab&sa=X&ved=0ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA 
