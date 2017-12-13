@@ -24,6 +24,18 @@ colnames(mort) <- c("country","time",seq(0,99,1),"year")
 m_mort <- melt(mort, id.vars = c("country","time","year"))
 colnames(m_mort) <-c("country","time","year","age","value")
 
+# add back to 1800s
+w<-which(m_mort$year == 1950)
+m_1950 <- m_mort[w,]
+for(i in 1949:1800){
+  m_1950$year <- i
+  m_mort <- rbind(m_1950,m_mort)
+}
+
+# save
+write.csv(m_mort, "m_mort.csv")
+
+
 # plot
 ggplot(m_mort,aes(x=year,y = value, group = age)) + geom_line(aes(colour=age)) + facet_wrap(~country)
 

@@ -9,7 +9,7 @@ library(plyr)
 
 # home 
 home <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/"
-code <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/code/"
+code <- "~/Documents/Latent-MDR_git/code/"
 
 # get functions
 setwd(code)
@@ -26,7 +26,7 @@ year1 <- 1800
 yearend <- 2015
 steps <- 1 + (yearend-year1) / dt
 
-X <- nat_hist(para_v, para_s, c(year1, yearend, dt), initial)
+X <- nat_hist(para_v, para_s, mort, c(year1, yearend, dt), initial)
 
 ##*** ANALYSIS *** ###
 # summary

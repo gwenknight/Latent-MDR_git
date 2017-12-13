@@ -3,7 +3,7 @@
 # ?? : issues / questions / thoughts
 
 ### ****** MAIN Function to generate model output ******************************************************** 
-nat_hist <- function(para_v, para_s, times_v, init){
+nat_hist <- function(para_v, para_s, mort, times_v, init){
   # para_v <- parameters that vary
   # para_s <- standard nat hist parameters
   # times <- c(year1, yearend, dt)
@@ -15,7 +15,7 @@ nat_hist <- function(para_v, para_s, times_v, init){
   for(i in 1:length(para_v)){assign(names(para_v)[i],para_v[i])}
   for(i in 1:length(para_s)){assign(names(para_s)[i],para_s[i])}
   # correct timestep for rates (all originally with 1 year denominator)
-  m <- m*dt; ma <- ma*dt; # mortality
+  mort$value <- mort$value*dt; ma <- ma*dt; # mortality
   sigma <- sigma*dt # reactivation rate
   beta<-beta*dt # transmission rate per year
   wr<-wr*dt; ws<-ws*dt # treatment rate per year
@@ -69,7 +69,7 @@ nat_hist <- function(para_v, para_s, times_v, init){
   ######################## ******** RUN ******** ######################################################################################
   ### If start of year
   for (i in 2:steps){
-    print(i)
+    print(c(i,year))
     #print(i)
     ### start of a year: births added in 
     # if i is a multiple of the years (NB: start at 1)
@@ -135,6 +135,9 @@ nat_hist <- function(para_v, para_s, times_v, init){
     TR_m = TR_m_new; TR_m_p = TR_m_new_p
     TS_m = TS_m_new; TS_m_p = TS_m_new_p
     # END TREATMENT MATRIX
+    
+    ###**** Mortality ***####
+    m <- mort[which(mort$year == year),"value"]
     
     ####**** Standard dynamics ***######
     upp <- Mnage - 1 # top age - 1

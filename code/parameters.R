@@ -2,6 +2,10 @@
 # ?? make births / deaths non constant?
 # ?? yearly changes in treatment success
 
+# Where is the data?
+data_home <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/Data/"
+setwd(data_home)
+
 # Highest age group
 Mnage <- 100
 upp = Mnage - 1
@@ -15,15 +19,25 @@ names(para_s) <- c("birth_rate",  "wr", "ws", "eps", "ma","sigma","p")
 p_i <- matrix(1,1,Mnage) 
 p_i[1:15] <- 0.02; p_i[16:Mnage] <- 0.15;
 
-# mortality rates
+#######*** mortality rates
+mort_all <- read.csv("m_mort.csv")[,-1]
+
 # UN gives by 5 year age groups
-#m <- matrix(0.0125,1,Mnage) # LE of 80yrs
-m[1:10] <- 400/100000; # 40/1000 high from USAID
-m[10:40]<- 30/100000; # from US https://www.google.co.uk/imgres?imgurl=https://www.cdc.gov/nchs/images/databriefs/1-50/db26_Fig_2.png&imgrefurl=https://www.cdc.gov/nchs/products/databriefs/db26.htm&h=686&w=960&tbnid=0ZQ2wBdlGuXr1M:&tbnh=150&tbnw=211&usg=___lRLJd8LVdpoKcbwF_EMZRQe9Bo%3D&vet=10ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA..i&docid=0AfpBMnU6MIZFM&client=firefox-b-ab&sa=X&ved=0ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA 
-m[40:Mnage] <- 450 / 100000
-m[Mnage] <- 1;
-plot(seq(1,99,1),m[,1:(Mnage-1)])
-1/mean(m) # want to be 80 - currently 76
+# Stick to India for now
+w<- which(mort_all$country == "India")
+mort <- mort_all[w,c("year","age","value")]
+
+# interest - check average age ok
+w<- which(mort_all$year == 2014)
+1/mean(mort_all[w,"value"]) # 19 in India
+
+
+# #m <- matrix(0.0125,1,Mnage) # LE of 80yrs
+# m[1:10] <- 400/100000; # 40/1000 high from USAID
+# m[10:40]<- 30/100000; # from US https://www.google.co.uk/imgres?imgurl=https://www.cdc.gov/nchs/images/databriefs/1-50/db26_Fig_2.png&imgrefurl=https://www.cdc.gov/nchs/products/databriefs/db26.htm&h=686&w=960&tbnid=0ZQ2wBdlGuXr1M:&tbnh=150&tbnw=211&usg=___lRLJd8LVdpoKcbwF_EMZRQe9Bo%3D&vet=10ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA..i&docid=0AfpBMnU6MIZFM&client=firefox-b-ab&sa=X&ved=0ahUKEwih2a7CtM_XAhUrCsAKHeQuBZ8Q9QEILDAA
+# m[40:Mnage] <- 450 / 100000
+# m[Mnage] <- 1;
+# plot(seq(1,99,1),m[,1:(Mnage-1)])
 
 ###**** treatment parameters
 # Length of treatment
