@@ -11,7 +11,8 @@ Mnage <- 100
 upp = Mnage - 1
 
 # Standard parameters para_s
-para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
+#para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
+para_s         <- c(1/2,  1,  0,    0.187, 0.0015, 0.14) ## NO MDR - no acquisition
 names(para_s) <- c("wr", "ws", "eps", "ma","sigma","p")
 # assume 12months to S detection, 2 years to MDR detection
 

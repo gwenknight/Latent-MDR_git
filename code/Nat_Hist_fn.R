@@ -74,26 +74,15 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     
     ###**** Birth and deaths ***####
     birth_rate <- birth[which(birth$year == year), "births"]
+    births = dt * birth_rate * psize[i-1] # occur over the year not just at start
     m <- mort[which(mort$year == year),"value"]
-    
-    ### start of a year: births added in 
-    # if i is a multiple of the years (NB: start at 1)
-    if((i-1) %% (1/dt) == 0){
-      year = year + 1; 
-      start = 1 # tracker for if start of year
-    
-      #### BIRTHS 
-      # Age 1, first time step of the year, all births occur
-      if(i > 1){births = birth_rate * psize[i-1]
-      } else { births = 0}
-    } else {start = 0; births = 0}
     
     ####***** TB model ****####
     
     # Transmission
-    lambdaS[i-1] =     beta * sum(p_i*(AS[i-1,] + AS_p[i-1,])); 
-    lambdaR[i-1] = f * beta * sum(p_i*(AR[i-1,] + AR_p[i-1,])) # else 0 (in initial conditions)
-    print(lambdaS)
+    lambdaS[i-1] =     (beta/psize[i-1]) * sum(p_i*(AS[i-1,] + AS_p[i-1,])); 
+    lambdaR[i-1] = f * (beta/psize[i-1]) * sum(p_i*(AR[i-1,] + AR_p[i-1,])) # else 0 (in initial conditions)
+    
     ###** Treatment matrix bit special **####
     # In treatment now is sum from last time
     TR[i,2:Mnage] = colSums(TR_m[,2:Mnage])
@@ -144,7 +133,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     ####**** Standard dynamics ***######
     upp <- Mnage - 1 # top age - 1
     
-    U [i,2:Mnage] = U [i-1,1:upp] + start * births - (m[1:upp]+lambdaS[i-1]+lambdaR[i-1])*U[i-1,1:upp] # start = 1 only at begin of year
+    U [i,2:Mnage] = U [i-1,1:upp] + births - (m[1:upp]+lambdaS[i-1]+lambdaR[i-1])*U[i-1,1:upp] # start = 1 only at begin of year
     LS[i,2:Mnage] = LS[i-1,1:upp] + lambdaS[i-1]*(1 - p)*(U[i-1,1:upp] + x*LR[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaS[i-1]*p + lambdaR[i-1]) )*LS[i-1,1:upp]
     LR[i,2:Mnage] = LR[i-1,1:upp] + lambdaR[i-1]*(1 - p)*(U[i-1,1:upp] + x*LS[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaR[i-1]*p + lambdaS[i-1]) )*LR[i-1,1:upp]
     
@@ -170,7 +159,14 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     AR_p[i,2:Mnage] = AR_p[i-1,1:upp] + new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] - (wr + ma)*AR_p[i-1,1:upp] + new_AR_from_rx + new_AR_from_rx_p
     AS_p[i,2:Mnage] = AS_p[i-1,1:upp] + new_AS_inf_p[i,2:Mnage] + new_AS_rea_p[i,2:Mnage] - (ws + ma)*AS_p[i-1,1:upp] + new_AS_from_rx + new_AS_from_rx_p
     
+    ### look at output
+    # print(c("U","LS","LR","AS","AR","TR","TS","LS_p","LR_p","AS_p","AR_p","TR_p","TS_p"))
+    # print(c(sum(U[i,1:Mnage]), sum(LS[i,1:Mnage]), sum(LR[i,1:Mnage]), sum(AS[i,1:Mnage]), 
+    #       sum(AR[i,1:Mnage]), sum(TR[i,1:Mnage]), sum(TS[i,1:Mnage]), sum(LS_p[i,1:Mnage]),
+    #       sum(LR_p[i,1:Mnage]), sum(AS_p[i,1:Mnage]), sum(AR_p[i,1:Mnage]), 
+    #       sum(TR_p[i,1:Mnage]), sum(TS_p[i,1:Mnage])))
     
+        
     ####**** Summary Output ****#####
     ## POPULATION SIZE
     psize[i]<-sum(U[i,],LS[i,],LR[i,],AS[i,],AR[i,],TS[i,],TR[i,],

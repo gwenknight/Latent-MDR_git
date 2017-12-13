@@ -19,7 +19,7 @@ dt <- 0.5
 source("parameters.R")
 
 # Variable parameters para_v
-para_v <-         c(0.0004,    0.3,  0.33)
+para_v <-         c(202,    0.3,  0.33)
 names(para_v) <- c("beta", "f", "x")
 
 year1 <- 1800
@@ -27,6 +27,9 @@ yearend <- 2015
 steps <- 1 + (yearend-year1) / dt
 
 X <- nat_hist(para_v, para_s, mort, birth, c(year1, yearend, dt), initial)
+
+X$prev[431]
+X$inc[431] ## India = 211
 
 ##*** ANALYSIS *** ###
 # summary
