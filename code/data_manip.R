@@ -41,3 +41,25 @@ ggplot(m_mort,aes(x=year,y = value, group = age)) + geom_line(aes(colour=age)) +
 
 w<-which(as.numeric(m_mort$age) > 80)
 ggplot(m_mort[w,],aes(x=year,y = value, group = age)) + geom_line(aes(colour=age)) + facet_wrap(~country)
+
+
+###**** Births ***###
+birth_orig <- read.csv("birth.csv")
+
+# rep rows for each time period
+birth <- birth_orig[rep(seq_len(nrow(birth_orig)), each=5),]
+birth$year <- rep(seq(2019, 1950, -1),4)
+
+# add back to 1800s
+w<-which(birth$year == 1950)
+m_1950 <- birth[w,]
+for(i in 1949:1800){
+  m_1950$year <- i
+  birth <- rbind(birth,m_1950)
+}
+
+# save
+write.csv(birth, "m_birth.csv")
+
+# plot
+ggplot(birth,aes(x=year,y = births)) + geom_line(aes(colour=Country)) 

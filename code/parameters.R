@@ -11,8 +11,8 @@ Mnage <- 100
 upp = Mnage - 1
 
 # Standard parameters para_s
-para_s        <- c(0.0005,        1/2,   1,  0.08, 0.187, 0.0015, 0.14)
-names(para_s) <- c("birth_rate",  "wr", "ws", "eps", "ma","sigma","p")
+para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
+names(para_s) <- c("wr", "ws", "eps", "ma","sigma","p")
 # assume 12months to S detection, 2 years to MDR detection
 
 # proportion infectious by age
@@ -61,8 +61,15 @@ initial <- matrix(0,7,Mnage)
 # TS[1] <- init[6,]; TR[1] <- init[7,]; 
 pop_prop <- c(rep(0.02,16), rep(0.01,54), rep(0.14/30,30))
 #plot(pop_prop)
-initial[1,] <- (100000 - 5) * pop_prop # population of 100,000
+initial[1,] <- (500000 - 5) * pop_prop # population of 500,000
 initial[4,18:25] <- 5 # 5 18yos with TB 
 
+#######*** birth rate
+birth_all <- read.csv("m_birth.csv")[,-1]
+
+# UN gives by 5 year age groups
+# Stick to India for now
+w<- which(birth_all$Country == "India")
+birth <- birth_all[w,c("year","births")]
 
 

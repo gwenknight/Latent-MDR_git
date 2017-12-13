@@ -3,7 +3,7 @@
 # ?? : issues / questions / thoughts
 
 ### ****** MAIN Function to generate model output ******************************************************** 
-nat_hist <- function(para_v, para_s, mort, times_v, init){
+nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
   # para_v <- parameters that vary
   # para_s <- standard nat hist parameters
   # times <- c(year1, yearend, dt)
@@ -71,12 +71,17 @@ nat_hist <- function(para_v, para_s, mort, times_v, init){
   for (i in 2:steps){
     print(c(i,year))
     #print(i)
+    
+    ###**** Birth and deaths ***####
+    birth_rate <- birth[which(birth$year == year), "births"]
+    m <- mort[which(mort$year == year),"value"]
+    
     ### start of a year: births added in 
     # if i is a multiple of the years (NB: start at 1)
     if((i-1) %% (1/dt) == 0){
       year = year + 1; 
       start = 1 # tracker for if start of year
-      
+    
       #### BIRTHS 
       # Age 1, first time step of the year, all births occur
       if(i > 1){births = birth_rate * psize[i-1]
@@ -88,7 +93,7 @@ nat_hist <- function(para_v, para_s, mort, times_v, init){
     # Transmission
     lambdaS[i-1] =     beta * sum(p_i*(AS[i-1,] + AS_p[i-1,])); 
     lambdaR[i-1] = f * beta * sum(p_i*(AR[i-1,] + AR_p[i-1,])) # else 0 (in initial conditions)
-    
+    print(lambdaS)
     ###** Treatment matrix bit special **####
     # In treatment now is sum from last time
     TR[i,2:Mnage] = colSums(TR_m[,2:Mnage])
@@ -135,9 +140,6 @@ nat_hist <- function(para_v, para_s, mort, times_v, init){
     TR_m = TR_m_new; TR_m_p = TR_m_new_p
     TS_m = TS_m_new; TS_m_p = TS_m_new_p
     # END TREATMENT MATRIX
-    
-    ###**** Mortality ***####
-    m <- mort[which(mort$year == year),"value"]
     
     ####**** Standard dynamics ***######
     upp <- Mnage - 1 # top age - 1
