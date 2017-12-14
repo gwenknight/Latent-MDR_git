@@ -6,6 +6,9 @@
 data_home <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/Data/"
 setwd(data_home)
 
+# Country
+country <- "China"
+
 # Highest age group
 Mnage <- 100
 upp = Mnage - 1
@@ -25,7 +28,7 @@ mort_all <- read.csv("m_mort.csv")[,-1]
 
 # UN gives by 5 year age groups
 # Stick to India for now
-w<- which(mort_all$country == "India")
+w<- which(mort_all$country == country)
 mort <- mort_all[w,c("year","age","value")]
 
 # interest - check average age ok
@@ -63,14 +66,14 @@ initial <- matrix(0,7,Mnage)
 pop_prop <- c(rep(0.02,16), rep(0.01,54), rep(0.14/30,30))
 #plot(pop_prop)
 initial[1,] <- (500000 - 5) * pop_prop # population of 500,000
-initial[4,18:25] <- 5 # 5 18yos with TB 
+initial[4,18:25] <- 5 # 5 in each age group 18 - 25 yos with TB 
 
 #######*** birth rate
 birth_all <- read.csv("m_birth.csv")[,-1]
 
 # UN gives by 5 year age groups
 # Stick to India for now
-w<- which(birth_all$Country == "India")
+w<- which(birth_all$Country == country)
 birth <- birth_all[w,c("year","births")]
 
 
