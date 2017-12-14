@@ -65,23 +65,28 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
   ### At start set up year tracker
   year = year1
   psize[1]<-sum(U[1,],LS[1,],LR[1,],AS[1,],AR[1,],TS[1,],TR[1,]) # no previously treated
+  psize_age[1,] <- U[1,] + LS[1,] + LR[1,] + AS[1,] + AR[1,] + TS[1,] + TR[1,] + LS_p[1,] + LR_p[1,] + AS_p[1,] + AR_p[1,] + TS_p[1,] + TR_p[1,]
+  #print(c("psize",psize[1]))
   
   ######################## ******** RUN ******** ######################################################################################
   ### If start of year
   for (i in 2:steps){
     print(c(i,year))
     #print(i)
+    year <- year + dt
     
     ###**** Birth and deaths ***####
-    birth_rate <- birth[which(birth$year == year), "births"]
+    birth_rate <- birth[which(birth$year == round(year,0)), "births"]
     births = dt * birth_rate * psize[i-1] # occur over the year not just at start
-    m <- mort[which(mort$year == year),"value"]
+    m <- mort[which(mort$year == round(year,0)),"value"]
+    #print(c("births",births, dt, birth_rate, psize[i-1], year))
     
     ####***** TB model ****####
     
     # Transmission
     lambdaS[i-1] =     (beta/psize[i-1]) * sum(p_i*(AS[i-1,] + AS_p[i-1,])); 
     lambdaR[i-1] = f * (beta/psize[i-1]) * sum(p_i*(AR[i-1,] + AR_p[i-1,])) # else 0 (in initial conditions)
+    #print(c("beta",beta,psize[i-1]))
     
     ###** Treatment matrix bit special **####
     # In treatment now is sum from last time
@@ -137,6 +142,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     U [i,2:Mnage] = U [i-1,1:upp] - (m[1:upp]+lambdaS[i-1]+lambdaR[i-1])*U[i-1,1:upp] # start = 1 only at begin of year
     LS[i,2:Mnage] = LS[i-1,1:upp] + lambdaS[i-1]*(1 - p)*(U[i-1,1:upp] + x*LR[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaS[i-1]*p + lambdaR[i-1]) )*LS[i-1,1:upp]
     LR[i,2:Mnage] = LR[i-1,1:upp] + lambdaR[i-1]*(1 - p)*(U[i-1,1:upp] + x*LS[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaR[i-1]*p + lambdaS[i-1]) )*LR[i-1,1:upp]
+    #print(c(m[1:upp],lambdaS[i-1],lambdaR[i-1]))
     
     new_AR_inf[i,2:Mnage] = lambdaR[i-1]*p*( U[i-1,1:upp] + x*(LS[i-1,1:upp] + LR[i-1,1:upp]) )
     new_AR_rea[i,2:Mnage] = sigma * LR[i-1,1:upp] 
@@ -162,9 +168,9 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     
     ### look at output
     # print(c("U","LS","LR","AS","AR","TR","TS","LS_p","LR_p","AS_p","AR_p","TR_p","TS_p"))
-    # print(c(sum(U[i,1:Mnage]), sum(LS[i,1:Mnage]), sum(LR[i,1:Mnage]), sum(AS[i,1:Mnage]), 
+    # print(c(sum(U[i,1:Mnage]), sum(LS[i,1:Mnage]), sum(LR[i,1:Mnage]), sum(AS[i,1:Mnage]),
     #       sum(AR[i,1:Mnage]), sum(TR[i,1:Mnage]), sum(TS[i,1:Mnage]), sum(LS_p[i,1:Mnage]),
-    #       sum(LR_p[i,1:Mnage]), sum(AS_p[i,1:Mnage]), sum(AR_p[i,1:Mnage]), 
+    #       sum(LR_p[i,1:Mnage]), sum(AS_p[i,1:Mnage]), sum(AR_p[i,1:Mnage]),
     #       sum(TR_p[i,1:Mnage]), sum(TS_p[i,1:Mnage])))
     
         
