@@ -3,6 +3,7 @@
 
 library(reshape2)
 library(ggplot2)
+options(stringsAsFactors = FALSE)
 
 #### Where is the data?
 data_home <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/Data/"
@@ -31,6 +32,29 @@ for(i in 1949:1800){
   m_1950$year <- i
   m_mort <- rbind(m_1950,m_mort)
 }
+
+# interpolate only age 5-80
+m_mort$in_value <- m_mort$value
+countries <- c("South Africa","India","China","United Kingdom")
+for(cc in 1:length(countries)){
+  c <- which(m_mort$country == countries[cc])
+  w<-intersect(c,intersect(which(as.numeric(m_mort$age) > 6), which(as.numeric(m_mort$age) < 100))) # when as.numeric goes to level number
+  for(j in 1800:2014){
+    w1<-intersect(w, which(m_mort$year==j))
+    aa<-approx(m_mort[w1,"value"][seq(1,dim(m_mort)[1],5)],n = length(w1)) # jumps every 5 yrs: interpolate between
+    m_mort[w1,"in_value"] <- aa$y
+  }
+}
+
+plot((as.numeric(m_mort[c[1:100],"age"])-1),m_mort[c[1:100],"value"])
+points((as.numeric(m_mort[c[1:100],"age"])-1),m_mort[c[1:100],"in_value"], col="red")
+
+
+plot((as.numeric(m_mort[c[20000:21500],"age"])-1),m_mort[c[20000:21500],"value"])
+points((as.numeric(m_mort[c[20000:21500],"age"])-1),m_mort[c[20000:21500],"in_value"], col="red")
+
+
+
 
 # save
 write.csv(m_mort, "m_mort.csv")

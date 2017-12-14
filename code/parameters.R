@@ -27,7 +27,6 @@ p_i[1:15] <- 0.02; p_i[16:Mnage] <- 0.15;
 mort_all <- read.csv("m_mort.csv")[,-1]
 
 # UN gives by 5 year age groups
-# Stick to India for now
 w<- which(mort_all$country == country)
 mort <- mort_all[w,c("year","age","value")]
 
@@ -71,8 +70,11 @@ initial[4,18:25] <- 5 # 5 in each age group 18 - 25 yos with TB
 #######*** birth rate
 birth_all <- read.csv("m_birth.csv")[,-1]
 
+# interpolate
+aa<-approx(birth_all$births[seq(1,dim(birth_all)[1],5)],n = dim(birth_all)[1]) # jumps every 5 yrs: interpolate between
+birth_all$value <- aa$y
+
 # UN gives by 5 year age groups
-# Stick to India for now
 w<- which(birth_all$Country == country)
 birth <- birth_all[w,c("year","births")]
 
