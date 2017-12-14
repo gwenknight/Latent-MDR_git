@@ -133,7 +133,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     ####**** Standard dynamics ***######
     upp <- Mnage - 1 # top age - 1
     
-    U [i,2:Mnage] = U [i-1,1:upp] + births - (m[1:upp]+lambdaS[i-1]+lambdaR[i-1])*U[i-1,1:upp] # start = 1 only at begin of year
+    U [i,1] = births # spread out over year so new ones in each time step
+    U [i,2:Mnage] = U [i-1,1:upp] - (m[1:upp]+lambdaS[i-1]+lambdaR[i-1])*U[i-1,1:upp] # start = 1 only at begin of year
     LS[i,2:Mnage] = LS[i-1,1:upp] + lambdaS[i-1]*(1 - p)*(U[i-1,1:upp] + x*LR[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaS[i-1]*p + lambdaR[i-1]) )*LS[i-1,1:upp]
     LR[i,2:Mnage] = LR[i-1,1:upp] + lambdaR[i-1]*(1 - p)*(U[i-1,1:upp] + x*LS[i-1,1:upp]) - (sigma + m[1:upp] + x*(lambdaR[i-1]*p + lambdaS[i-1]) )*LR[i-1,1:upp]
     
