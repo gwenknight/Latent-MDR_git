@@ -64,5 +64,3 @@ g <- ggplot(m_psz_age[w,], aes(x = variable, y = value )) + geom_bar(stat = "ide
    facet_wrap(~year) + scale_x_discrete(breaks = seq(0,100,5))
 g
 ggsave(paste(country,"_1950onwards.pdf",sep=""))
-# plot only 5 year groups
-g 

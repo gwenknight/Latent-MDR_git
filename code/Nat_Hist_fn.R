@@ -15,7 +15,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
   for(i in 1:length(para_v)){assign(names(para_v)[i],para_v[i])}
   for(i in 1:length(para_s)){assign(names(para_s)[i],para_s[i])}
   # correct timestep for rates (all originally with 1 year denominator)
-  mort$value <- mort$value*dt; ma <- ma*dt; # mortality
+  mort$in_value <- mort$in_value*dt; ma <- ma*dt; # mortality
   sigma <- sigma*dt # reactivation rate
   beta<-beta*dt # transmission rate per year
   wr<-wr*dt; ws<-ws*dt # treatment rate per year
@@ -76,9 +76,9 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     year <- year + dt
     
     ###**** Birth and deaths ***####
-    birth_rate <- birth[which(birth$year == round(year,0)), "births"]
+    birth_rate <- birth[which(birth$year == round(year,0)), "in_births"] # "in" gives interpolated
     births = dt * birth_rate * psize[i-1] # occur over the year not just at start
-    m <- mort[which(mort$year == round(year,0)),"value"]
+    m <- mort[which(mort$year == round(year,0)),"in_value"]
     #print(c("births",births, dt, birth_rate, psize[i-1], year))
     
     ####***** TB model ****####

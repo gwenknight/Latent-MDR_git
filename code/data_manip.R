@@ -54,8 +54,6 @@ plot((as.numeric(m_mort[c[20000:21500],"age"])-1),m_mort[c[20000:21500],"value"]
 points((as.numeric(m_mort[c[20000:21500],"age"])-1),m_mort[c[20000:21500],"in_value"], col="red")
 
 
-
-
 # save
 write.csv(m_mort, "m_mort.csv")
 
@@ -82,8 +80,19 @@ for(i in 1949:1800){
   birth <- rbind(birth,m_1950)
 }
 
+# interpolate
+birth$in_births <- birth$births
+countries <- c("South Africa","India","China","United Kingdom")
+for(cc in 1:length(countries)){
+  c <- which(birth$Country == countries[cc])
+  aa<-approx(birth[c,"births"][seq(1,length(c),5)],n = length(c)) # jumps every 5 yrs: interpolate between
+  birth[c,"in_births"] <- aa$y
+}
+
 # save
 write.csv(birth, "m_birth.csv")
 
 # plot
-ggplot(birth,aes(x=year,y = births)) + geom_line(aes(colour=Country)) 
+ggplot(birth,aes(x=year,y = births)) + geom_point(aes(colour=Country)) + 
+  geom_line(data= birth, aes(x=year, y = in_births,colour=Country))
+
