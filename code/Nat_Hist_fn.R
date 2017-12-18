@@ -59,7 +59,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
   TR_m_p <- matrix(0,rx_r_length,Mnage); TR_m_new_p <- matrix(0,rx_r_length,Mnage)
   
   ## build output matrices
-  psize <- matrix(0,1,steps); inc <- matrix(0,2,steps); prev <- matrix(0,2,steps); ratio_mdr <- matrix(0,1,steps);
+  psize <- matrix(0,1,steps); inc <- matrix(0,2,steps); prev <- matrix(0,4,steps); ratio_mdr <- matrix(0,2,steps);
   psize_age <- matrix(0,steps,Mnage)
   
   ### At start set up year tracker
@@ -181,17 +181,28 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     psize_age[i,] <- U[i,] + LS[i,] + LR[i,] + AS[i,] + AR[i,] + TS[i,] + TR[i,] + 
                          LS_p[i,] + LR_p[i,] + AS_p[i,] + AR_p[i,] + TS_p[i,] + TR_p[i,]
     #
-    ## Incidence
-    inc[1,i] <-  100000*sum(new_AS_inf[i,1:Mnage] + new_AS_rea[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage])/psize[i]
-    inc[2,i] <-  100000*sum(new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] + new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage])/psize[i]
+    ## Incidence per year
+    inc[1,i] <-  1/dt*100000*sum(new_AS_inf[i,1:Mnage] + new_AS_rea[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage])/psize[i]
+    inc[2,i] <-  1/dt*100000*sum(new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] + new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage])/psize[i]
     
-    ## Prevalence
+    ## Prevalence of active (1: S, 2: R) and latent [3: S, 4: R]
     prev[1,i] <- 100000*sum(AS[i,1:Mnage] + AS_p[i,1:Mnage])/psize[i]
     prev[2,i] <- 100000*sum(AR[i,1:Mnage] + AR_p[i,1:Mnage])/psize[i]
+    prev[3,i] <- 100000*sum(LS[i,1:Mnage] + LS_p[i,1:Mnage])/psize[i]
+    prev[4,i] <- 100000*sum(LR[i,1:Mnage] + LR_p[i,1:Mnage])/psize[i]
     
-    ## Ratio new MDR to previously treated: of previously treated cases, how many are MDR?
-    if(sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) > 0){
-    ratio_mdr[i] <- 100*sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage]) / sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage])}
+    ## Ratio of MDR: 
+    # 1) how many new are MDR? 
+    # 2) how many prev treat are MDR? 
+    if(sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + 
+           new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) > 0){
+    ratio_mdr[1,i] <- 100*sum(new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage]) / 
+      sum(new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] + 
+            new_AS_inf[i,1:Mnage] + new_AS_rea[i,1:Mnage])
+    ratio_mdr[2,i] <- 100*sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage]) / 
+      sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + 
+            new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage])
+    }
     
     # # Number of TB deaths in HIV-, in HIV+, all form HIV deaths
     # TBDeaths[i,]=ma * (AR[i-1,1:upp] + AS[i-1,]) + ma[1:upp] * (U[i-1,] + LR[i-1,] + LS[i-1,]);

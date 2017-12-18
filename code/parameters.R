@@ -6,16 +6,13 @@
 data_home <- "~/Dropbox/MRC SD Fellowship/Research/MDR/Latent MDR/Data/"
 setwd(data_home)
 
-# Country
-country <- "India"
-
 # Highest age group
 Mnage <- 100
 upp = Mnage - 1
 
 # Standard parameters para_s
-#para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
-para_s         <- c(1/2,  1,  0,    0.187, 0.0015, 0.14) ## NO MDR - no acquisition
+para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
+#para_s         <- c(1/2,  1,  0,    0.187, 0.0015, 0.14) ## NO MDR - no acquisition
 names(para_s) <- c("wr", "ws", "eps", "ma","sigma","p")
 # assume 12months to S detection, 2 years to MDR detection
 
@@ -43,6 +40,8 @@ w<- which(mort_all$year == 2014)
 # plot(seq(1,99,1),m[,1:(Mnage-1)])
 
 ###**** treatment parameters
+# all need to be time dependent... 
+
 # Length of treatment
 rx_s_length <- 0.5 / dt
 rx_r_length <- 1.5 / dt

@@ -19,17 +19,28 @@ dt <- 0.5
 source("parameters.R")
 
 # Variable parameters para_v
-para_v <-         c(202,    0.3,  0.33)
+para_v <-         c(85,   0.3,  0.33)
 names(para_v) <- c("beta", "f", "x")
 
 year1 <- 1800
-yearend <- 2015
+yearend <- 2014
 steps <- 1 + (yearend-year1) / dt
+
+# Country
+country <- "India"
+
+## RUN
 
 X <- nat_hist(para_v, para_s, mort, birth, c(year1, yearend, dt), initial)
 
-X$prev[431]
-X$inc[431] ## India = 211
+X$prev[1,steps] # AS Between 20-1200 (Kendall 1st)
+X$inc[1,steps] ## AS Between 20-1400 per year (Kendall 1st). India = 211
+
+X$ratio_mdr[,steps] # new: 5%, prev.treat: 25%
+
+X$prev[3,steps]/1000 # Percentage LS
+X$prev[4,steps]/1000 # Percentage LR
+sum(X$prev[3:4,steps])/1000 # Percentage LS
 
 ##*** ANALYSIS *** ###
 # summary
@@ -52,15 +63,15 @@ plot(seq(1:steps),X$psize, type = "l")
 if(max(X$inc[2,]) > max(X$inc[1,])){
 plot (seq(1:steps),X$inc[2,],type = "l", col ="red")
 lines(seq(1:steps),X$inc[1,], col = "blue")
-} else {plot (seq(1:steps),X$inc[1,],type = "l", col ="red")
-  lines(seq(1:steps),X$inc[2,], col = "blue")}
+} else {plot (seq(1:steps),X$inc[1,],type = "l", col ="blue")
+  lines(seq(1:steps),X$inc[2,], col = "red")}
 
 # prev change
 if(max(X$prev[2,]) > max(X$prev[1,])){
   plot (seq(1:steps),X$prev[2,],type = "l", col ="red")
   lines(seq(1:steps),X$prev[1,], col = "blue")
-} else {plot (seq(1:steps),X$prev[1,],type = "l", col ="red")
-  lines(seq(1:steps),X$prev[2,], col = "blue")}
+} else {plot (seq(1:steps),X$prev[1,],type = "l", col ="blue")
+  lines(seq(1:steps),X$prev[2,], col = "red")}
 
 # percentage of new TB cases that are MDR (should be ~ 20%)
 plot (seq(1:steps),X$ratio_mdr,type = "l", ylab = "Perc. new TB = MDR")
@@ -76,6 +87,16 @@ for(ii in 1:length(X$psize)){p_summ_row[,ii]<-p_summ_row[,ii]/X$psize[ii]}
 m_p_summ_row<-melt(p_summ_row,id.vars = "pop")
 ggplot(m_p_summ_row,aes(x = variable, y = value,fill=pop)) + geom_bar(stat="identity")
 
+# mean age against MDR-TB
+
+
+
+
+
+
+
+
+### Not sure needed:
 # age distribution
 mAS <- as.data.frame(X$AS)
 colnames(mAS)<-seq(1:Mnage);
