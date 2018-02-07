@@ -68,55 +68,63 @@ Previous treatment (any) is tracked in order to match statistics on levels of MD
 Fitness cost applied to transmission or progression
 Treatment of MDR-TB higher than just CDR as misdiagnosis / think they are DS-TB: reason for higher level of MDR in re-treatment. Use "case detection of TB" 
 
+\subsection{Equations}
+
+There are 7 basic subpopulations, stratified by naive and previously treated (with subscript "p"). The natural history states are uninfected ($U$), latently infected with drug susceptible ($L_S$) or MDR-TB ($L_R$), active disease with drug susceptible ($A_S$) or MDR-TB ($A_R$). There are also two treatment states: on treatment and previously infected with DS-TB ($T_S$) or with MDR-TB ($T_R$). We assumed that the false positive rate for those uninfected with \textit{M.tb.} was negligible (i.e. we did not have a previously treated uninfected sub-population).  
+
+We modelled the population as a discrete time, single age stratified population. People could be aged 0 - 100 ($j$). Those uninfected come from new births. 
+\begin{align}
+U[i,1] = b 
+\end{align}
+where $b = birth_{rate} * p_{size}[i-1] * dt$, the product of the annual birth rate (from UN data), the population size in the previous time step ($p_{size}[i-1]$) and the timestep (dt). 
+
+The force of infection at time step $i$ ($\lambda_S[i]$,$\lambda_R[i]$) for DS-TB or MDR-TB respectively is calculated as the rate of transmission ($\beta$) divided by the population size ($p_size$), multiplied by the number with active TB (naive and previously treated).  
+
+\begin{align}
+\lambda_S[i-1] &= \frac{\beta}{p_{size}[i-1]} \sum_{j}{p_i (A_S[i-1] + A_{Sp}[i-1])} \\
+\lambda_R[i-1] &= \frac{\beta}{p_{size}[i-1]} \sum_{j}{p_i (A_R[i-1] + A_{Rp}[i-1])} 
+\end{align}
+
+Those who are uninfected transition to carrying \textit{M.tb.}. The background death rate is $m$ which varies by age as determined by UN population data. 
+\begin{align}
+U[i,2:100] = U[i-1,1:99] - (m[1:99]+\lambda_S[i-1]+\lambda_R[i-1])U[i-1,1:99]
+\end{align}
+
+Those with latent \textit{M.tb} infection can progress to active disease at a rate $\sigma$, or be reinfected. A proportion $p$ of all those that are (re-)infected progress immediately to active TB disease. The protective effect of being latently infected is $x$. 
+
+\begin{equation}
+\begin{split}
+L_S[i,2:100] &= L_S[i-1,1:99] + \lambda_S[i-1](1 - p)(U[i-1,1:99] + xL_R[i-1,1:99]) \\ &- (\sigma + m[1:99] + x(\lambda_S[i-1]p + \lambda_R[i-1]) )L_S[i-1,1:99] \\
+L_R[i,2:100] &= L_R[i-1,1:99] \\ &+ \lambda_R[i-1](1 - p)(U[i-1,1:99] + xL_S[i-1,1:99]) \\ &- (\sigma + m[1:99] + x(\lambda_R[i-1]p + \lambda_S[i-1]))L_R[i-1,1:99]
+\end{split}
+\end{equation}
+
+Those with active TB disease can be detected and receive treatment at an aggregated rate $w_s[i], w_r[i]$ for DS-TB or MDR-TB respectively. There is a additional mortality rate for those with active TB ($m_a$) which is not age dependent. 
+
+\begin{equation}
+\begin{split}
+A_R[i,2:100] &= A_R[i-1,1:99] + \lambda_R[i-1]p( U[i-1,1:99] + x(L_S[i-1,1:99] + L_R[i-1,1:99]) ) \\ &+ \sigma L_R[i-1,1:99] 
+     - (w_r[i-1] + m[1:99
+] + m_a) A_R[i-1,1:99] \\
+A_S[i,2:100] &= A_S[i-1,1:99] + \lambda_S[i-1] p ( U[i-1,1:99] + x(L_S[i-1,1:99] + L_R[i-1,1:99]) ) \\ &+ \sigma  L_S[i-1,1:99] 
+     - (w_s[i-1] + m[1:99
+] + m_a) A_S[i-1,1:99] 
+\end{split}
+\end{equation} 
+
+Those in the previously treated stratification transition through the treatment sub-populations, but otherwise have the same natural history dynamics. For those latently infected and previously treated the dynamics are:
+
+\begin{equation}
+	\begin{split}
+L_{Sp}[i,2:100] &= L_{Sp}[i-1,1:99] + \lambda_S[i-1](1 - p)(xL_{Rp}[i-1,1:99]) \\ & + new_LS_from_rx + new_LS_from_rx_p \\ & - (\sigma + m[1:99] + x(\lambda_S[i-1]p + \lambda_R[i-1]) )L_{Sp}[i-1,1:99] \\
+L_{Rp}[i,2:100] &= L_{Rp}[i-1,1:99] + \lambda_R[i-1](1 - p)(xL_{Sp}[i-1,1:99]) \\ & + new_LR_from_rx + new_LR_from_rx_p \\ & - (\sigma + m[1:99] + x(\lambda_R[i-1]p + \lambda_S[i-1]) )L_{Rp}[i-1,1:99]
+\end{split}
+\end{equation}
 
 
 
 
 
-
-
-
-
-
-
-
-\clearpage 
-
-\subsection{FLU SKELETON}
-
-
-\begin{figure}[htbp]
-	\centering
-	\includegraphics[width=1\textwidth]{../plots/compare_seasons.pdf}
-	\caption{Comparing baseline data across seasons}
-	\label{fig:compareseasons}
-\end{figure} 
-
-\begin{itemize}
-\item don't include season - not much difference and too little data
-\end{itemize}
-
-
-\begin{figure}[htbp]
-\centering
-\begin{subfigure}[b]{0.4\textwidth}
-		\includegraphics[width=1\textwidth]{../plots/ili.pdf}
-		\caption{}
-		\label{fig:ili}
-\end{subfigure}
-\begin{subfigure}[b]{0.4\textwidth}
-    \includegraphics[width=1\textwidth]{../plots/ili_fever.pdf}
-	\caption{}
-	\label{fig:ili.fever}
-\end{subfigure}
-\caption{Antibiotic prescriptions split by those with ECDC standards defined Influenza like illness (ILI) (a) or an ILI and fever (b)}
-\label{fig:ilif}
-\end{figure}
-
-\begin{itemize}
-\item don't include ili
-\item include ili.fever (SF: tracks 'flu season well)
-\end{itemize}
 
 
 

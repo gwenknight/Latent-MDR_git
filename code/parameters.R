@@ -40,7 +40,7 @@ w<- which(mort_all$year == 2014)
 # plot(seq(1,99,1),m[,1:(Mnage-1)])
 
 ###**** treatment parameters
-# all need to be time dependent... 
+# all need to be time dependent... case detection vs treatment success? 
 
 # Length of treatment
 rx_s_length <- 0.5 / dt

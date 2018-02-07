@@ -36,7 +36,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
   U  <- matrix(0,steps,Mnage); LS <- matrix(0,steps,Mnage); AS <- matrix(0,steps,Mnage)
   LR <- matrix(0,steps,Mnage); AR <- matrix(0,steps,Mnage)
   TR <- matrix(0,steps,Mnage); TS <- matrix(0,steps,Mnage);
-  LS_p <- matrix(0,steps,Mnage); AS_p <- matrix(0,steps,Mnage)
+  U_p  <- matrix(0,steps,Mnage); LS_p <- matrix(0,steps,Mnage); AS_p <- matrix(0,steps,Mnage)
   LR_p <- matrix(0,steps,Mnage); AR_p <- matrix(0,steps,Mnage)
   TR_p <- matrix(0,steps,Mnage); TS_p <- matrix(0,steps,Mnage);
   # From inputted initial conditions
@@ -150,8 +150,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     new_AS_inf[i,2:Mnage] = lambdaS[i-1]*p*( U[i-1,1:upp] + x*(LS[i-1,1:upp] + LR[i-1,1:upp]) )
     new_AS_rea[i,2:Mnage] = sigma * LS[i-1,1:upp] 
     
-    AR[i,2:Mnage] = AR[i-1,1:upp] + new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] - (wr + ma)*AR[i-1,1:upp] 
-    AS[i,2:Mnage] = AS[i-1,1:upp] + new_AS_inf[i,2:Mnage] + new_AS_rea[i,2:Mnage] - (ws + ma)*AS[i-1,1:upp] 
+    AR[i,2:Mnage] = AR[i-1,1:upp] + new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] - (wr + m[1:upp] + ma)*AR[i-1,1:upp] 
+    AS[i,2:Mnage] = AS[i-1,1:upp] + new_AS_inf[i,2:Mnage] + new_AS_rea[i,2:Mnage] - (ws + m[1:upp] + ma)*AS[i-1,1:upp] 
     
     # previous_treated
     LS_p[i,2:Mnage] = LS_p[i-1,1:upp] + lambdaS[i-1]*(1 - p)*(x*LR_p[i-1,1:upp]) + new_LS_from_rx + new_LS_from_rx_p - (sigma + m[1:upp] + x*(lambdaS[i-1]*p + lambdaR[i-1]) )*LS_p[i-1,1:upp]
@@ -163,8 +163,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     new_AS_inf_p[i,2:Mnage] = lambdaS[i-1]*p*(x*(LS_p[i-1,1:upp] + LR_p[i-1,1:upp]))
     new_AS_rea_p[i,2:Mnage] = sigma * LS_p[i-1,1:upp] 
     
-    AR_p[i,2:Mnage] = AR_p[i-1,1:upp] + new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] - (wr + ma)*AR_p[i-1,1:upp] + new_AR_from_rx + new_AR_from_rx_p
-    AS_p[i,2:Mnage] = AS_p[i-1,1:upp] + new_AS_inf_p[i,2:Mnage] + new_AS_rea_p[i,2:Mnage] - (ws + ma)*AS_p[i-1,1:upp] + new_AS_from_rx + new_AS_from_rx_p
+    AR_p[i,2:Mnage] = AR_p[i-1,1:upp] + new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] - (wr + m[1:upp] + ma)*AR_p[i-1,1:upp] + new_AR_from_rx + new_AR_from_rx_p
+    AS_p[i,2:Mnage] = AS_p[i-1,1:upp] + new_AS_inf_p[i,2:Mnage] + new_AS_rea_p[i,2:Mnage] - (ws + m[1:upp] + ma)*AS_p[i-1,1:upp] + new_AS_from_rx + new_AS_from_rx_p
     
     ### look at output
     # print(c("U","LS","LR","AS","AR","TR","TS","LS_p","LR_p","AS_p","AR_p","TR_p","TS_p"))
