@@ -15,7 +15,7 @@ code <- "~/Documents/Latent-MDR_git/code/"
 setwd(code)
 source("Nat_Hist_fn.R")
 # time step determines treatment matrix - if change have to change parameters.R
-dt <- 0.5
+dt <- 0.5 # half a year
 source("parameters.R")
 
 # Variable parameters para_v
@@ -40,18 +40,18 @@ X$ratio_mdr[,steps] # new: 5%, prev.treat: 25%
 
 X$prev[3,steps]/1000 # Percentage LS
 X$prev[4,steps]/1000 # Percentage LR
-sum(X$prev[3:4,steps])/1000 # Percentage LS
+sum(X$prev[3:4,steps])/1000 # Percentage Latent?
 
 ##*** ANALYSIS *** ###
 # summary
 summ_row <- as.data.frame(rbind(rowSums(X$U),rowSums(X$LS),rowSums(X$LR),rowSums(X$AS),rowSums(X$AR),rowSums(X$TR),rowSums(X$TS),
-                                rowSums(X$LS_p),rowSums(X$LR_p),rowSums(X$AS_p),rowSums(X$AR_p),rowSums(X$TR_p),rowSums(X$TS_p)))
+                                rowSums(X$LS_p),rowSums(X$LR_p),rowSums(X$AS_p),rowSums(X$AR_p),rowSums(X$TR_p),rowSums(X$TS_p),X$psize))
 colnames(summ_row)<-seq(1:steps);
-summ_row$pop<-c("U","LS","LR","AS","AR","TR","TS","LS_p","LR_p","AS_p","AR_p","TR_p","TS_p")
+summ_row$pop<-c("U","LS","LR","AS","AR","TR","TS","LS_p","LR_p","AS_p","AR_p","TR_p","TS_p","total")
 m_summ_row <- melt(summ_row[-1,],id.var = "pop")
 
 ggplot(m_summ_row,aes(x=variable, y = value, colour = pop, group = pop)) + geom_line(size = 1.2) + 
-  scale_color_manual(values= palette(rainbow(12))) # + scale_y_continuous(limit = c(0,1000))
+  scale_color_manual(values= palette(rainbow(13))) # + scale_y_continuous(limit = c(0,1000))
 
 ggplot(m_summ_row,aes(x = variable, y = value, colour = pop, group = pop)) + geom_line() + facet_wrap(~ pop, scales = "free")
 
