@@ -96,10 +96,10 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     TS_p[i,2:Mnage] = colSums(TR_m_p[,2:Mnage])
     
     # leave treatment now are:
-    new_AS_from_rx <- colSums(fails*TS_m[,2:Mnage]) # fail treatment 
-    new_AR_from_rx <- colSums(failr*TR_m[,2:Mnage]) + eps * TS_m[rx_s_length,2:Mnage] # fail treatment + acquisitions
-    new_LS_from_rx <- colSums(cures*TS_m[,2:Mnage]) # cured
-    new_LR_from_rx <- colSums(curer*TR_m[,2:Mnage]) # cured
+    new_AS_from_rx <- colSums(fails*TS_m[,2:Mnage]) # leave + not cured (if during treatment) = fail treatment 
+    new_AR_from_rx <- colSums(failr*TR_m[,2:Mnage]) + eps * TS_m[rx_s_length,2:Mnage] # leave + not cured = fail treatment + acquisitions
+    new_LS_from_rx <- colSums(cures*TS_m[,2:Mnage]) # leave + cured
+    new_LR_from_rx <- colSums(curer*TR_m[,2:Mnage]) # leave + cured
     
     new_AS_from_rx_p <- colSums(fails*TS_m_p[,2:Mnage]) # fail treatment 
     new_AR_from_rx_p <- colSums(failr*TR_m_p[,2:Mnage]) + eps * TS_m_p[rx_s_length,2:Mnage] # fail treatment + acquisitions
@@ -118,13 +118,13 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     # end column = dead = drops off
     if(rx_s_length > 1){
       for(jj in 2:Mnage){
-        for(ii in 2:rx_s_length){ TS_m_new[ii,jj] = TS_m[ii-1,jj-1] - mts[ii-1,jj-1]*TS_m[ii-1,jj-1] - cures[ii-1,jj-1]*TS_m[ii-1,jj-1] - fails[ii-1,jj-1]*TS_m[ii-1,jj-1];
-                                  TS_m_new_p[ii,jj] = TS_m_p[ii-1,jj-1] - mts[ii-1,jj-1]*TS_m_p[ii-1,jj-1] - cures[ii-1,jj-1]*TS_m_p[ii-1,jj-1] - fails[ii-1,jj-1]*TS_m_p[ii-1,jj-1] }
+        for(ii in 2:rx_s_length){ TS_m_new[ii,jj] = TS_m[ii-1,jj-1]*(1 - mts[ii-1,jj-1] - cures[ii-1,jj-1] - fails[ii-1,jj-1]);
+                                  TS_m_new_p[ii,jj] = TS_m_p[ii-1,jj-1]*(1 - mts[ii-1,jj-1] - cures[ii-1,jj-1] - fails[ii-1,jj-1])}
       }
     }
     for(jj in 2:Mnage){
-      for(ii in 2:rx_r_length){ TR_m_new[ii,jj] = TR_m[ii-1,jj-1] - mtr[ii-1,jj-1]*TR_m[ii-1,jj-1] - curer[ii-1,jj-1]*TR_m[ii-1,jj-1] - failr[ii-1,jj-1]*TR_m[ii-1,jj-1];
-                                TR_m_new_p[ii,jj] = TR_m_p[ii-1,jj-1] - mtr[ii-1,jj-1]*TR_m_p[ii-1,jj-1] - curer[ii-1,jj-1]*TR_m_p[ii-1,jj-1] - failr[ii-1,jj-1]*TR_m_p[ii-1,jj-1]}
+      for(ii in 2:rx_r_length){ TR_m_new[ii,jj] = TR_m[ii-1,jj-1]*(1 - mtr[ii-1,jj-1] - curer[ii-1,jj-1] - failr[ii-1,jj-1]);
+                                TR_m_new_p[ii,jj] = TR_m_p[ii-1,jj-1]*(1 - mtr[ii-1,jj-1] - curer[ii-1,jj-1] - failr[ii-1,jj-1])}
     }
     # save 
     #save_TS_M <- rbind(save_TS_M,rowSums(TS_m))
