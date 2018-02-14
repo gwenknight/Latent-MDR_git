@@ -47,14 +47,14 @@ rx_s_length <- 0.5 / dt
 rx_r_length <- 1.5 / dt
 
 # fail
-fails <- matrix(0.01,rx_s_length,upp)
-failr <- matrix(0.1,rx_r_length,upp)
+fails <- matrix(0.0765,rx_s_length,upp)
+failr <- matrix(c(0.36,0.004,0.1195),rx_r_length,upp)
 # cure
-cures <- matrix(0.01,rx_s_length,upp)
-curer <- matrix(0,rx_r_length,upp)
+cures <- matrix(0.83,rx_s_length,upp)
+curer <- matrix(c(0.093,0.0159,0.803),rx_r_length,upp)
 # mortality 
-mts <- matrix(0.01,rx_r_length,upp)
-mtr <- matrix(0.01,rx_r_length,upp)
+mts <- matrix(0.187 *dt ,rx_r_length,upp) # use ma parameter
+mtr <- matrix(c(0.0573,0.0705,0.0775),rx_r_length,upp)
 
 ###*** Initial conditions
 initial <- matrix(0,7,Mnage)
@@ -63,7 +63,7 @@ initial <- matrix(0,7,Mnage)
 # TS[1] <- init[6,]; TR[1] <- init[7,]; 
 pop_prop <- c(rep(0.02,16), rep(0.01,54), rep(0.14/30,30))
 #plot(pop_prop)
-initial[1,] <- (500000 - 5) * pop_prop # population of 500,000
+initial[1,] <- (500000 - 5) * pop_prop # population of 500,000 at start
 initial[4,18:25] <- 5 # 5 in each age group 18 - 25 yos with TB 
 
 #######*** birth rate
