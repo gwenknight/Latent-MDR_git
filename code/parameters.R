@@ -11,10 +11,14 @@ Mnage <- 100
 upp = Mnage - 1
 
 # Standard parameters para_s
-para_s        <- c(1/2,   1,  0.08, 0.187, 0.0015, 0.14)
+
+para_s        <- c(1/2,   1,  0.065, 0.187, 0.0015, 0.14)
 #para_s         <- c(1/2,  1,  0,    0.187, 0.0015, 0.14) ## NO MDR - no acquisition
+
 names(para_s) <- c("wr", "ws", "eps", "ma","sigma","p")
-# assume 12months to S detection, 2 years to MDR detection
+# assume 6months to S detection, 2 years to MDR detection
+# 0.005 median acquisition of resistance per Rx course (Menzies 2009, Kendall 2015)
+# eps = proportion of S failures that have acquired resistance: 0.005 / 0.0765 = 0.065
 
 # proportion infectious by age
 p_i <- matrix(1,1,Mnage) 
@@ -47,14 +51,15 @@ rx_s_length <- 0.5 / dt
 rx_r_length <- 1.5 / dt
 
 # fail
-fails <- matrix(0.0765,rx_s_length,upp)
-failr <- matrix(c(0.36,0.004,0.1195),rx_r_length,upp)
+
+fails <- matrix(0.0765,rx_s_length,Mnage)
+failr <- matrix(c(0.36,0.004,0.1195),rx_r_length,Mnage)
 # cure
-cures <- matrix(0.83,rx_s_length,upp)
-curer <- matrix(c(0.093,0.0159,0.803),rx_r_length,upp)
+cures <- matrix(0.83,rx_s_length,Mnage)
+curer <- matrix(c(0.093,0.0159,0.803),rx_r_length,Mnage)
 # mortality 
-mts <- matrix(0.187 *dt ,rx_r_length,upp) # use ma parameter
-mtr <- matrix(c(0.0573,0.0705,0.0775),rx_r_length,upp)
+mts <- matrix(0.187*dt ,rx_s_length,Mnage) # use ma parameter
+mtr <- matrix(c(0.0573,0.0705,0.0775),rx_r_length,Mnage)
 
 ###*** Initial conditions
 initial <- matrix(0,7,Mnage)
@@ -67,7 +72,7 @@ initial[1,] <- (500000 - 5) * pop_prop # population of 500,000 at start
 initial[4,18:25] <- 5 # 5 in each age group 18 - 25 yos with TB 
 
 #######*** birth rate
-birth_all <- read.csv("m_birth.csv")[,-1]
+birth_all <- read.csv("m_birth.csv")[,-1] # per 1,000 population
 w<- which(birth_all$Country == country)
 birth <- birth_all[w,c("year","in_births")]
 
