@@ -19,7 +19,7 @@ dt <- 0.5 # half a year
 source("parameters.R")
 
 # Variable parameters para_v
-para_v <-         c(85,   0.3,  0.33)
+para_v <-         c(80,   0.5,  0.33)
 names(para_v) <- c("beta", "f", "x")
 
 year1 <- 1800
@@ -74,7 +74,8 @@ if(max(X$prev[2,]) > max(X$prev[1,])){
   lines(seq(1:steps),X$prev[2,], col = "red")}
 
 # percentage of new TB cases that are MDR (should be ~ 20%)
-plot (seq(1:steps),X$ratio_mdr,type = "l", ylab = "Perc. new TB = MDR")
+plot (seq(1,steps,1),X$ratio_mdr[1,],type = "l", ylab = "Perc. new TB = MDR")
+plot (seq(1,steps,1),X$ratio_mdr[2,],type = "l", ylab = "Perc. prev treat new TB = MDR")
 
 # proportion of population latently infected - varies by country? 
 w<-c(which(summ_row$pop == "LS"), which(summ_row$pop == "LR"), which(summ_row$pop == "LS_p"), which(summ_row$pop == "LR_p"))
@@ -94,7 +95,12 @@ ggplot(m_p_summ_row,aes(x = variable, y = value,fill=pop)) + geom_bar(stat="iden
 
 
 
-
+### Age stuff
+Uu <- as.data.frame(X$U)
+colnames(Uu)<-seq(1,100,1)
+Uu$t <- seq(1,dim(Uu)[1],1)
+Uum <- melt(Uu[,c(1:10,"t")], id.vars = "t")
+ggplot(Uum, aes(x = t, y = value, group = variable, colour = variable)) + geom_line()
 
 ### Not sure needed:
 # age distribution
@@ -131,4 +137,5 @@ m_psz_age <- melt(mpsz_age,id.vars = c("time"))
 
 w<-c(which(m_psz_age$time == 2),which(m_psz_age$time == round(steps / 3,0)),which(m_psz_age$time == round(2*steps/3,0)),which(m_psz_age$time == steps))
 ggplot(m_psz_age[w,], aes(x = variable, y = value )) + geom_bar(stat = "identity") + coord_flip() + facet_wrap(~time)
+
 
