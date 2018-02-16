@@ -78,7 +78,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     birth_rate <- birth[which(birth$year == round(year,0)), "in_births"] # "in" gives interpolated
     births = dt * birth_rate * psize[i-1]  # occur over the year not just at start. Birth rate per 1000 population
     m <- mort[which(mort$year == round(year,0)),"in_value"]
-    print(c("births",births, dt, birth_rate, psize[i-1], year,"m",sum(m*psize_age[i-1,])))
+    #print(c("births",births, dt, birth_rate, psize[i-1], year,"m",sum(m*psize_age[i-1,])))
     
     upp <- Mnage - 1 # top age - 1
     
@@ -101,6 +101,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       
       # leave SUSCEPTIBLE treatment now are:
       # already aged
+      # some also die: but just dropped off 
       rem_AS_from_rx <- (1 - eps) * fails[1:upp]*TS_m[,1:(upp)] # leave + not cured (if during treatment) = fail treatment 
       new_AR_from_rx <- eps * fails[1:upp]*TS_m[,1:(upp)] # acquisitions
       new_LS_from_rx <- cures[1:upp]*TS_m[,1:(upp)] # leave + cured
@@ -112,8 +113,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       #print(c("here",sum(TS_m[,1:upp] - (rem_AS_from_rx + new_AR_from_rx + new_LS_from_rx) - mts[1:upp]*TS_m[,1:(upp)] ),
       #        sum(TS_m_p[,1:upp] - (rem_AS_from_rx_p + new_AR_from_rx_p + new_LS_from_rx_p)- mts[1:upp]*TS_m_p[,1:(upp)])))
       
-      # update RESISTANT TREATMENT matrix
-      rem_AR_from_rx <- failr[1,1:upp]*TR_m[1,1:(upp)];      new_LR_from_rx <- curer[1,1:upp]*TR_m[1,1:(upp)];
+      # update RESISTANT treatment matrix
+      rem_AR_from_rx <- failr[1,1:upp]*TR_m[1,1:(upp)];     new_LR_from_rx <- curer[1,1:upp]*TR_m[1,1:(upp)];
       rem_AR_from_rx_p <- failr[1,1:upp]*TR_m_p[1,1:(upp)]; new_LR_from_rx_p <- curer[1,1:upp]*TR_m_p[1,1:(upp)];
       
       for(ijk in 2:rx_r_length){
@@ -126,24 +127,11 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
         TR_m_p[ijk,2:Mnage] <- TR_m_p[ijk-1,1:(upp)] - (failr[ijk,1:upp] + curer[ijk,1:upp] + mtr[ijk,1:upp]) * TR_m_p[ijk,1:(upp)];
       }
       
-      # ## update TR/TS matrix
-      # # lose bottom row (rx_r/s_length) lost - to failr / cure / death / acquisition(s-r)
-      # # first column = age 0 = not changed but none? and not read out. 
-      # # aging included
-      # # end column = dead = drops off
-      # if(rx_s_length > 1){
-      #   for(jj in 2:Mnage){
-      #     for(ii in 2:rx_s_length){ TS_m_new[ii,jj] = TS_m[ii-1,jj-1]*(1 - mts[ii-1,jj-1] - cures[ii-1,jj-1] - fails[ii-1,jj-1]);
-      #     TS_m_new_p[ii,jj] = TS_m_p[ii-1,jj-1]*(1 - mts[ii-1,jj-1] - cures[ii-1,jj-1] - fails[ii-1,jj-1])}
-      #   }
-      # }
-      # for(jj in 2:Mnage){
-      #   for(ii in 2:rx_r_length){ TR_m_new[ii,jj] = TR_m[ii-1,jj-1]*(1 - mtr[ii-1,jj-1] - curer[ii-1,jj-1] - failr[ii-1,jj-1]);
-      #   TR_m_new_p[ii,jj] = TR_m_p[ii-1,jj-1]*(1 - mtr[ii-1,jj-1] - curer[ii-1,jj-1] - failr[ii-1,jj-1])}
-      # }
-      # save 
-      #save_TS_M <- rbind(save_TS_M,rowSums(TS_m))
-      #save_TR_M <- rbind(save_TR_M,rowSums(TR_m))
+      # new on treatment 
+      TS_m_new[1,2:Mnage]   = ws * AS[i-1,1:upp]
+      TR_m_new[1,2:Mnage]   = wr * AR[i-1,1:upp]
+      TS_m_new_p[1,2:Mnage] = ws * AS_p[i-1,1:upp]
+      TR_m_new_p[1,2:Mnage] = wr * AR_p[i-1,1:upp]
       
       # new
       TR_m = TR_m_new; TR_m_p = TR_m_new_p
@@ -164,7 +152,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       new_AS_inf[i,2:Mnage] = lambdaS[i-1]*p*( U[i-1,1:upp] + x*(LS[i-1,1:upp] + LR[i-1,1:upp]) )
       new_AS_rea[i,2:Mnage] = sigma * LS[i-1,1:upp] 
       
-      AR[i,2:Mnage] = AR[i-1,1:upp] + new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] - (wr + m[1:upp] + ma)*AR[i-1,1:upp] 
+      AR[i,2:Mnage] = AR[i-1,1:upp] + new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] - (ws + wr + m[1:upp] + ma)*AR[i-1,1:upp] 
       AS[i,2:Mnage] = AS[i-1,1:upp] + new_AS_inf[i,2:Mnage] + new_AS_rea[i,2:Mnage] - (ws + m[1:upp] + ma)*AS[i-1,1:upp] 
       
       # previous_treated
@@ -177,7 +165,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       new_AS_inf_p[i,2:Mnage] = lambdaS[i-1]*p*(x*(LS_p[i-1,1:upp] + LR_p[i-1,1:upp]))
       new_AS_rea_p[i,2:Mnage] = sigma * LS_p[i-1,1:upp] 
       
-      AR_p[i,2:Mnage] = AR_p[i-1,1:upp] + new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] - (wr + m[1:upp] + ma)*AR_p[i-1,1:upp] + rem_AR_from_rx + new_AR_from_rx + rem_AR_from_rx_p + new_AR_from_rx_p
+      AR_p[i,2:Mnage] = AR_p[i-1,1:upp] + new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] + ws * AR[i-1,1:upp] - (wr + m[1:upp] + ma)*AR_p[i-1,1:upp] + rem_AR_from_rx + new_AR_from_rx + rem_AR_from_rx_p + new_AR_from_rx_p
       AS_p[i,2:Mnage] = AS_p[i-1,1:upp] + new_AS_inf_p[i,2:Mnage] + new_AS_rea_p[i,2:Mnage] - (ws + m[1:upp] + ma)*AS_p[i-1,1:upp] + rem_AS_from_rx + rem_AS_from_rx_p
       
       ### look at output
@@ -197,9 +185,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
         ratio_mdr[1,i] <- 100*sum( new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] ) / 
           sum(new_AR_inf[i,2:Mnage] + new_AR_rea[i,2:Mnage] + 
                 new_AS_inf[i,2:Mnage] + new_AS_rea[i,2:Mnage])
-        ratio_mdr[2,i] <- 100*sum(new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] 
-                                  + new_AR_from_rx + new_AR_from_rx_p) / 
-          sum(new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] + new_AR_from_rx + new_AR_from_rx_p +  
+        ratio_mdr[2,i] <- 100*sum(new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] ) / 
+          sum(new_AR_inf_p[i,2:Mnage] + new_AR_rea_p[i,2:Mnage] +  
                 new_AS_inf_p[i,2:Mnage] + new_AS_rea_p[i,2:Mnage])}
       #print(c("year",year, sum(new_AR_inf_p[i,2:Mnage]) , sum(new_AR_rea_p[i,2:Mnage]) , 
       #        sum(new_AR_from_rx) , sum(new_AR_from_rx_p) ,  
@@ -245,31 +232,13 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
         TR_m_p[ijk,1:(Mnage)] <- TR_m_p[ijk-1,1:(Mnage)] - (failr[ijk,1:Mnage] + curer[ijk,1:Mnage] + mtr[ijk,1:Mnage]) * TR_m_p[ijk,1:(Mnage)];
       }
       
-      # new
+      # new on treatment
       TS_m_new[1,]   = ws * AS[i-1,1:Mnage]
       TR_m_new[1,]   = wr * AR[i-1,1:Mnage]
       TS_m_new_p[1,] = ws * AS_p[i-1,1:Mnage]
       TR_m_new_p[1,] = wr * AR_p[i-1,1:Mnage]
       
-      # ## update TR/TS matrix
-      # # lose bottom row (rx_r/s_length) lost - to failr / cure / death / acquisition(s-r)
-      # # first column = age 0 = not changed but none? and not read out. 
-      # # no aging: jj = jj (no jj - 1)
-      # if(rx_s_length > 1){
-      #   for(jj in 1:Mnage){
-      #     for(ii in 2:rx_s_length){ TS_m_new[ii,jj] = TS_m[ii-1,jj]*(1 - mts[ii-1,jj] - cures[ii-1,jj] - fails[ii-1,jj]);
-      #     TS_m_new_p[ii,jj] = TS_m_p[ii-1,jj]*(1 - mts[ii-1,jj] - cures[ii-1,jj] - fails[ii-1,jj])}
-      #   }
-      # }
-      # for(jj in 1:Mnage){
-      #   for(ii in 2:rx_r_length){ TR_m_new[ii,jj] = TR_m[ii-1,jj]*(1 - mtr[ii-1,jj] - curer[ii-1,jj] - failr[ii-1,jj]);
-      #   TR_m_new_p[ii,jj] = TR_m_p[ii-1,jj]*(1 - mtr[ii-1,jj] - curer[ii-1,jj] - failr[ii-1,jj])}
-      # }
-      # save 
-      #save_TS_M <- rbind(save_TS_M,rowSums(TS_m))
-      #save_TR_M <- rbind(save_TR_M,rowSums(TR_m))
-      
-      # new
+      # new matrix
       TR_m = TR_m_new; TR_m_p = TR_m_new_p
       TS_m = TS_m_new; TS_m_p = TS_m_new_p
       # END TREATMENT MATRIX
@@ -290,7 +259,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       new_AS_inf[i,1:Mnage] = lambdaS[i-1]*p*( U[i-1,1:Mnage] + x*(LS[i-1,1:Mnage] + LR[i-1,1:Mnage]) )
       new_AS_rea[i,1:Mnage] = sigma * LS[i-1,1:Mnage] 
       
-      AR[i,1:Mnage] = AR[i-1,1:Mnage] + new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] - (wr + m[1:Mnage] + ma)*AR[i-1,1:Mnage] 
+      AR[i,1:Mnage] = AR[i-1,1:Mnage] + new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] - (ws + wr + m[1:Mnage] + ma)*AR[i-1,1:Mnage] 
       AS[i,1:Mnage] = AS[i-1,1:Mnage] + new_AS_inf[i,1:Mnage] + new_AS_rea[i,1:Mnage] - (ws + m[1:Mnage] + ma)*AS[i-1,1:Mnage] 
       
       # previous_treated
@@ -303,7 +272,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       new_AS_inf_p[i,1:Mnage] = lambdaS[i-1]*p*(x*(LS_p[i-1,1:Mnage] + LR_p[i-1,1:Mnage]))
       new_AS_rea_p[i,1:Mnage] = sigma * LS_p[i-1,1:Mnage] 
       
-      AR_p[i,1:Mnage] = AR_p[i-1,1:Mnage] + new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] - (wr + m[1:Mnage] + ma)*AR_p[i-1,1:Mnage] + rem_AR_from_rx + new_AR_from_rx + rem_AR_from_rx_p + new_AR_from_rx_p
+      AR_p[i,1:Mnage] = AR_p[i-1,1:Mnage] + new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + ws * AR[i-1,1:Mnage] - (wr + m[1:Mnage] + ma)*AR_p[i-1,1:Mnage] + rem_AR_from_rx + new_AR_from_rx + rem_AR_from_rx_p + new_AR_from_rx_p
       AS_p[i,1:Mnage] = AS_p[i-1,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage] - (ws + m[1:Mnage] + ma)*AS_p[i-1,1:Mnage] + rem_AS_from_rx + rem_AS_from_rx_p
       
       ### look at output
@@ -323,9 +292,8 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
         ratio_mdr[1,i] <- 100*sum( new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] ) / 
           sum(new_AR_inf[i,1:Mnage] + new_AR_rea[i,1:Mnage] + 
                 new_AS_inf[i,1:Mnage] + new_AS_rea[i,1:Mnage])
-        ratio_mdr[2,i] <- 100*sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] 
-                                  + new_AR_from_rx + new_AR_from_rx_p) / 
-          sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + new_AR_from_rx + new_AR_from_rx_p +  
+        ratio_mdr[2,i] <- 100*sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] ) / 
+          sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage]  +  
                 new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) }
     }
     ####**** Summary Output ****#####
