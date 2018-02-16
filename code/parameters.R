@@ -12,11 +12,12 @@ upp = Mnage - 1
 
 # Standard parameters para_s
 
-para_s        <- c(1/2,   1,  0.065, 0.187, 0.0015, 0.14)
+para_s        <- c(1/(1.5),   1,  0.065, 0.187, 0.0015, 0.14)
+#para_s        <- c(1/(1.5),   1,  0.1, 0.187, 0.0015, 0.14)
 #para_s         <- c(1/2,  1,  0,    0.187, 0.0015, 0.14) ## NO MDR - no acquisition
 
 names(para_s) <- c("wr", "ws", "eps", "ma","sigma","p")
-# assume 6months to S detection, 2 years to MDR detection
+# assume 6months to S detection, 1.5 years to MDR detection
 # 0.005 median acquisition of resistance per Rx course (Menzies 2009, Kendall 2015)
 # eps = proportion of S failures that have acquired resistance: 0.005 / 0.0765 = 0.065
 
