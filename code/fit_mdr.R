@@ -31,6 +31,7 @@ store_para <- c() # STORE
 store_para1 <- c() # STORE
 store_para2 <- c() # STORE
 store_para3 <- c() # STORE
+store_X <- c() # STORE
 
 for(i in 1:runs){
   print(i)
