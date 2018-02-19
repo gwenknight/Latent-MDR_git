@@ -285,7 +285,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
       ## Ratio of MDR: 
       # 1) how many new are MDR? 
       # 2) how many prev treat are MDR?
-      #print(sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) )
+      #print(c(i,U[i+1],sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) ))
       
       if( sum(new_AR_inf_p[i,1:Mnage] + new_AR_rea_p[i,1:Mnage] + 
               new_AS_inf_p[i,1:Mnage] + new_AS_rea_p[i,1:Mnage]) > 0){
