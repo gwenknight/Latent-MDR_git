@@ -78,7 +78,7 @@ nat_hist <- function(para_v, para_s, mort, birth, times_v, init){
     birth_rate <- birth[which(birth$year == round(year,0)), "in_births"] # "in" gives interpolated
     births = dt * birth_rate * psize[i-1]  # occur over the year not just at start. Birth rate per 1000 population
     m <- mort[which(mort$year == round(year,0)),"in_value"]
-    print(c("births",births, dt, birth_rate, psize[i-1], year,"m",sum(m*psize_age[i-1,])))
+    #print(c("births",births, dt, birth_rate, psize[i-1], year,"m",sum(m*psize_age[i-1,])))
     
     upp <- Mnage - 1 # top age - 1
     
